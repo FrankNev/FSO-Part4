@@ -75,20 +75,18 @@ describe('When the request is valid', () => {
    })
 
    test('the likes of a blog can be updated', async () => {
-      await helper.getBlogsInDb()
-
-      const newBlog = {
+      const updateRequest = {
          id: '5a422ba71b54a676234d17fb',
          title: 'TDD harms architecture',
          likes: 6
       }
 
-      const response = await api.put(`/api/blogs/${ newBlog.id }`).send(newBlog)
+      const response = await api.put(`/api/blogs/${ updateRequest.id }`).send(updateRequest)
       expect(response.status).toBe(200)
 
       const result = await helper.getBlogsInDb()
       const updatedBlog = result.find(blog => {
-         if( blog.id === newBlog.id ) {
+         if( blog.id === updateRequest.id ) {
             return blog
          }
       })
