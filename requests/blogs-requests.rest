@@ -1,0 +1,23 @@
+POST http://localhost:3003/api/blogs
+Content-Type: application/json
+
+{
+   "title": "Google is your friend",
+   "author": "Me",
+   "url": "https://www.google.com/",
+   "likes": "18"
+}
+
+###
+DELETE http://localhost:3003/api/blogs/
+
+###
+PUT http://localhost:3003/api/blogs/
+Content-Type: application/json
+
+{
+   "title": "Google is your friend",
+   "author": "Me",
+   "url": "https://www.google.com/",
+   "likes": "35"
+}
