@@ -12,6 +12,8 @@ beforeEach(async () => {
    await Blog.insertMany(helper.listOfBlogs)
 })
 
+let token = ''
+
 describe('While testing the api', () => {
    test('the blogs list is returned as json', async () => {
       await api
@@ -43,6 +45,7 @@ describe('When the request is valid', () => {
 
       await api
          .post('/api/blogs')
+         .set('Authorization', `Bearer ${token}`)
          .send(newBlog)
          .expect(200)
          .expect('Content-Type', /application\/json/)
@@ -63,6 +66,7 @@ describe('When the request is valid', () => {
 
       await api
          .post('/api/blogs')
+         .set('Authorization', `Bearer ${token}`)
          .send(newBlog)
          .expect(200)
          .expect('Content-Type', /application\/json/)
@@ -81,12 +85,15 @@ describe('When the request is valid', () => {
          likes: 6
       }
 
-      const response = await api.put(`/api/blogs/${ updateRequest.id }`).send(updateRequest)
+      const response = await api
+         .put(`/api/blogs/${updateRequest.id}`)
+         .send(updateRequest)
+
       expect(response.status).toBe(200)
 
       const result = await helper.getBlogsInDb()
       const updatedBlog = result.find(blog => {
-         if( blog.id === updateRequest.id ) {
+         if (blog.id === updateRequest.id) {
             return blog
          }
       })
@@ -100,17 +107,26 @@ describe('When the request is valid', () => {
    })
 
    test('a blog can be deleted', async () => {
-      const blogToRemove = {
-         id: '634f460a376f6df17808fe93',
-         title: 'Step by step guide to becoming a modern Node.js developer in 2022',
+      const blogsAtStart = await helper.getBlogsInDb()
+      const newBlog = {
+         title: 'An overview of Node.js: architecture, APIs, event loop, concurrency',
+         author: 'Axel Rauschmayer',
+         url: 'https://2ality.com/2022/09/nodejs-overview.html',
+         likes: 24
       }
 
+      const response = await api
+         .post('/api/blogs')
+         .set('Authorization', `Bearer ${token}`)
+         .send(newBlog)
+
       await api
-         .delete(`/api/blogs/${ blogToRemove.id }`)
+         .delete(`/api/blogs/${response.body.id}`)
+         .set('Authorization', `Bearer ${token}`)
          .expect(204)
 
-      const result = await helper.getBlogsInDb()
-      expect(result.length).toBe(helper.listOfBlogs.length)
+      const blogsAtEnd = await helper.getBlogsInDb()
+      expect(blogsAtEnd.length).toBe(blogsAtStart.length)
    })
 })
 
@@ -123,8 +139,24 @@ describe('Error occurs when trying to', () => {
 
       await api
          .post('/api/blogs')
+         .set('Authorization', `Bearer ${token}`)
          .send(newBlog)
          .expect(400)
+   })
+
+   test('add a blog without a valid token', async () => {
+      const newBlog = {
+         title: 'The most amazing blog',
+         author: 'An amazing person',
+         url: 'http://google.com',
+         likes: 1
+      }
+
+      await api
+         .post('/api/blogs')
+         .set('Authorization', 'Bearer wrongtoken')
+         .send(newBlog)
+         .expect(401)
    })
 })
 

@@ -1,23 +1,14 @@
 POST http://localhost:3003/api/blogs
 Content-Type: application/json
+Authorization: Bearer something here
 
 {
-   "title": "Google is your friend",
-   "author": "Me",
-   "url": "https://www.google.com/",
-   "likes": "18"
+   "title": "How to Write Good Code: 10 Beginner-friendly Techniques for Instant Results",
+   "author": "Joel Falconer",
+   "url": "https://www.sitepoint.com/how-to-write-good-code/",
+   "likes": 41
 }
 
 ###
-DELETE http://localhost:3003/api/blogs/
-
-###
-PUT http://localhost:3003/api/blogs/
-Content-Type: application/json
-
-{
-   "title": "Google is your friend",
-   "author": "Me",
-   "url": "https://www.google.com/",
-   "likes": "35"
-}
+DELETE http://localhost:3003/api/blogs/id
+Authorization: Bearer something here
